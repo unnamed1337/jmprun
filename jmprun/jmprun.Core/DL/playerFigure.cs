@@ -26,9 +26,9 @@ namespace jmprun.Core.DL
     }
     public void Jmp()
     {
-      if(Ypos <= 1)
+      if(Ypos <= 0)
       {
-        Ymov += 3;
+        Ymov += 10;
       }
     }
     public void Update()

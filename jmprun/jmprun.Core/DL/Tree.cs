@@ -13,8 +13,8 @@ namespace jmprun.Core.DL
     {
       Ypos = 0;
       Xpos = x;
-      Width = 1;
-      Height = 2;
+      Width = Globals.random.Next(1,3);
+      Height = Globals.random.Next(3,6);
       Color = Color.Brown;
     }
   }

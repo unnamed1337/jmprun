@@ -13,9 +13,9 @@ namespace jmprun.Core.DL
     {
       Ypos = 0;
       Xpos = x;
-      Width = 1;
-      Height = 1;
-      Color = Color.LightSlateGray;
+      Width = Globals.random.Next(2,5);
+      Height = Globals.random.Next(1,3);
+      Color = Color.DarkSlateGray;
     }
   }
 }

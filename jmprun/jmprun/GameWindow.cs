@@ -15,6 +15,7 @@ namespace jmprun
   public partial class GameWindow : Form
   {
     public playerFigure player;
+    List<Obstecle> Obstecles;
     public double Xview = 2;
     public GameWindow()
     {
@@ -23,11 +24,26 @@ namespace jmprun
     }
     public void Init()
     {
+      Globals.random = new Random();
+      Random rnd = new Random();
       this.Width = 100 * Globals.Scale;
       this.Height = Globals.GameHeight * Globals.Scale + 70;
       this.BackColor = Color.DeepSkyBlue;
-
-      player = new playerFigure(1);
+      Obstecles = new List<Obstecle>();
+      player = new playerFigure(10);
+      Obstecles.Add(new Tree(rnd.Next(15, 70)));
+      for (int i = 0; i <= 3; i++)
+      {
+        int x = Obstecles[Obstecles.Count - 1].Xpos + rnd.Next(1, 100);
+        if (rnd.Next(0, 101) >= 50)
+        {
+          Obstecles.Add(new Rock(x));
+        }
+        else
+        {
+          Obstecles.Add(new Tree(x));
+        }
+      }
     }
     public void DrawGamemap(PaintEventArgs e)
     {
@@ -37,6 +53,13 @@ namespace jmprun
       grass.Dispose();
       e.Graphics.FillEllipse(playerBrush, (player.Xpos * Globals.Scale) - (Convert.ToInt32(Xview) * Globals.Scale) + (player.Height * 2), (Globals.GameHeight * Globals.Scale) - (player.Ypos * Globals.Scale) - player.Height, player.Height, player.Height);
       playerBrush.Dispose();
+
+      foreach (Obstecle o in Obstecles)
+      {
+        SolidBrush b = new SolidBrush(o.Color);
+        e.Graphics.FillRectangle(b, o.Xpos * Globals.Scale - (Convert.ToInt32(Xview) * Globals.Scale), Globals.GameHeight * Globals.Scale - (o.Ypos + o.Height * Globals.Scale), o.Width * Globals.Scale, o.Height * Globals.Scale);
+        b.Dispose();
+      }
     }
 
     private void GameWindow_Paint(object sender, PaintEventArgs e)
@@ -82,11 +105,32 @@ namespace jmprun
     private void Timer(object sender, EventArgs e)
     {
       player.Update();
-      Xview += 0.1;
-      if (player.Xpos >= Xview + ((this.Width / Globals.Scale) * 0.75))
+      //Xview += 0.1;
+      //if (player.Xpos >= Xview + ((this.Width / Globals.Scale) * 0.75))
+      //{
+      //  Xview += 3;
+      //}
+
+      Xview += player.Xmov;
+
+      if (Obstecles[0].Xpos < Xview)
       {
-        Xview += 3;
+        if (Obstecles[0].Xpos + (this.Width / Globals.Scale) * 2 < Xview)
+        {
+          Obstecles.RemoveAt(0);
+        }
+        Random rnd = new Random();
+        int x = Obstecles[Obstecles.Count - 1].Xpos + rnd.Next(1, 100);
+        if (rnd.Next(0, 101) >= 50)
+        {
+          Obstecles.Add(new Rock(x));
+        }
+        else
+        {
+          Obstecles.Add(new Tree(x));
+        }
       }
+
       this.Invalidate();
       this.Update();
       this.Refresh();

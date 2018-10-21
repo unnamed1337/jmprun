@@ -11,6 +11,7 @@ namespace jmprun.Core
   {
     public static int GameHeight { get { return 40; } }
     public static int Scale { get { return 10; } }
+    public static Random random { get; set; }
     
   }
 }
