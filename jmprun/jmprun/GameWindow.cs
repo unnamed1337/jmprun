@@ -31,7 +31,7 @@ namespace jmprun
       this.BackColor = Color.DeepSkyBlue;
       Obstecles = new List<Obstecle>();
       player = new playerFigure(10);
-      Obstecles.Add(new Tree(rnd.Next(15, 70)));
+      Obstecles.Add(new Tree(rnd.Next(20, 70)));
       for (int i = 0; i <= 3; i++)
       {
         int x = Obstecles[Obstecles.Count - 1].Xpos + rnd.Next(1, 100);
@@ -104,14 +104,14 @@ namespace jmprun
 
     private void Timer(object sender, EventArgs e)
     {
-      player.Update();
+      player.Update(Obstecles);
       //Xview += 0.1;
       //if (player.Xpos >= Xview + ((this.Width / Globals.Scale) * 0.75))
       //{
       //  Xview += 3;
       //}
 
-      Xview += player.Xmov;
+      Xview = player.Xpos;
 
       if (Obstecles[0].Xpos < Xview)
       {
