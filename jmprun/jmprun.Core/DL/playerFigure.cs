@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace jmprun.Core.DL
     public int Height { get; set; }
     public int Width { get; set; }
     private bool canMoveDown { get; set; }
+    public Image img { get; set; }
+    private bool img1 { get; set; }
 
     public playerFigure(int x)
     {
@@ -26,12 +29,14 @@ namespace jmprun.Core.DL
       Xmov = 0;
       Height = 20;
       Width = 20;
+      img = Image.FromFile("2.png");
+      img1 = false;
     }
     public void Jmp()
     {
       if (Ypos <= 0 || !canMoveDown)
       {
-        Ymov += 10;
+        Ymov = 8;
       }
     }
     public void Update(List<Obstecle> obstecles)
@@ -42,21 +47,21 @@ namespace jmprun.Core.DL
       {
         if (o.Xpos == Xpos + 6 && Xmov > 0)
         {
-          if (o.Ypos >= Ypos && Ypos <= o.Ypos + o.Height)
+          if (Ypos - (Height / Globals.Scale) < o.Ypos + o.Height && Ypos + (Height / Globals.Scale) >= o.Ypos)
           {
             canMoveX = false;
           }
         }
         if (o.Xpos + o.Width == Xpos + 4 && Xmov < 0)
         {
-          if (o.Ypos >= Ypos && Ypos <= o.Ypos + o.Height)
+          if (Ypos - (Height / Globals.Scale) < o.Ypos + o.Height && Ypos + (Height / Globals.Scale) >= o.Ypos)
           {
             canMoveX = false;
           }
         }
-        if (Xpos + 2 >= o.Xpos -3 && Xpos +5 <= o.Xpos + o.Width)
+        if (Xpos + (Width / Globals.Scale) >= o.Xpos - 3 && Xpos + 5 <= o.Xpos + o.Width)
         {
-          if(Ypos == o.Ypos + o.Height)
+          if (Ypos == o.Ypos + o.Height)
           {
             canMoveDown = false;
           }
@@ -80,6 +85,24 @@ namespace jmprun.Core.DL
       {
         Xpos += (Xmov * Speed);
       }
+      if ((Xmov != 0 && canMoveX) || (Ypos > 0 && canMoveDown))
+      {
+        if (Ypos > 0 && canMoveDown)
+        {
+          img = Image.FromFile("../../../jmprun.SRC/jmp.png");
+        }
+        else if (img1)
+        {
+          img = Image.FromFile("../../../jmprun.SRC/1.png"); ;
+          img1 = false;
+        }
+        else
+        {
+          img = Image.FromFile("../../../jmprun.SRC/2.png"); ;
+          img1 = true;
+        }
+      }
+
     }
   }
 }

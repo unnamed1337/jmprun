@@ -17,6 +17,9 @@ namespace jmprun
     public playerFigure player;
     List<Obstecle> Obstecles;
     public double Xview = 2;
+    public int CoinsTotal = 0;
+    Image coin;
+
     public GameWindow()
     {
       InitializeComponent();
@@ -44,27 +47,65 @@ namespace jmprun
           Obstecles.Add(new Tree(x));
         }
       }
+      coin = Image.FromFile("../../../jmprun.SRC/coin.png");
+      
+      
+
     }
     public void DrawGamemap(PaintEventArgs e)
     {
       SolidBrush grass = new SolidBrush(Color.ForestGreen);
-      SolidBrush playerBrush = new SolidBrush(Color.Goldenrod);
+      SolidBrush playerBrush = new SolidBrush(Color.Black);
       e.Graphics.FillRectangle(grass, 0, Globals.GameHeight * Globals.Scale, 100 * Globals.Scale, 70);
       grass.Dispose();
-      e.Graphics.FillEllipse(playerBrush, (player.Xpos * Globals.Scale) - (Convert.ToInt32(Xview) * Globals.Scale) + (player.Height * 2), (Globals.GameHeight * Globals.Scale) - (player.Ypos * Globals.Scale) - player.Height, player.Height, player.Height);
+
+      //e.Graphics.FillEllipse(playerBrush, (player.Xpos * Globals.Scale) - (Convert.ToInt32(Xview) * Globals.Scale) + (player.Height * 2), (Globals.GameHeight * Globals.Scale) - (player.Ypos * Globals.Scale) - player.Height, player.Height, player.Height);
+
+      e.Graphics.DrawImage(player.img, (player.Xpos * Globals.Scale) - (Convert.ToInt32(Xview) * Globals.Scale) + (player.Height * 2), (Globals.GameHeight * Globals.Scale) - (player.Ypos * Globals.Scale) - player.Height, player.Height, player.Height);
       playerBrush.Dispose();
+
+      List<Rectangle> trees = new List<Rectangle>();
+      List<Rectangle> rocks = new List<Rectangle>();
 
       foreach (Obstecle o in Obstecles)
       {
-        SolidBrush b = new SolidBrush(o.Color);
-        e.Graphics.FillRectangle(b, o.Xpos * Globals.Scale - (Convert.ToInt32(Xview) * Globals.Scale), Globals.GameHeight * Globals.Scale - (o.Ypos + o.Height * Globals.Scale), o.Width * Globals.Scale, o.Height * Globals.Scale);
-        b.Dispose();
+        if (o.GetType() == typeof(Tree))
+        {
+          trees.Add(new Rectangle(o.Xpos * Globals.Scale - (Convert.ToInt32(Xview) * Globals.Scale), Globals.GameHeight * Globals.Scale - (o.Ypos + o.Height * Globals.Scale), o.Width * Globals.Scale, o.Height * Globals.Scale));
+        }
+        else if (o.GetType() == typeof(Rock))
+        {
+          rocks.Add(new Rectangle(o.Xpos * Globals.Scale - (Convert.ToInt32(Xview) * Globals.Scale), Globals.GameHeight * Globals.Scale - (o.Ypos + o.Height * Globals.Scale), o.Width * Globals.Scale, o.Height * Globals.Scale));
+        }
+        else
+        {
+          SolidBrush b = new SolidBrush(o.Color);
+          e.Graphics.FillRectangle(b, o.Xpos * Globals.Scale - (Convert.ToInt32(Xview) * Globals.Scale), Globals.GameHeight * Globals.Scale - (o.Ypos + o.Height * Globals.Scale), o.Width * Globals.Scale, o.Height * Globals.Scale);
+          b.Dispose();
+        }
       }
+      SolidBrush t = new SolidBrush(Color.Brown);
+      SolidBrush r = new SolidBrush(Color.DarkSlateGray);
+      if (trees.Count > 0)
+      {
+        e.Graphics.FillRectangles(t, trees.ToArray());
+      }
+      if (rocks.Count > 0)
+      {
+        e.Graphics.FillRectangles(r, rocks.ToArray());
+      }
+      t.Dispose();
+      r.Dispose();
     }
 
     private void GameWindow_Paint(object sender, PaintEventArgs e)
     {
       DrawGamemap(e);
+      Font font = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point);
+      SolidBrush b = new SolidBrush(Color.Gold);
+      e.Graphics.DrawString(CoinsTotal + " x ", font, b, 10, 10);
+      //e.Graphics.FillEllipse(b, 40, 10, 20, 20);
+      e.Graphics.DrawImage(coin, 40, 10, 20, 20);
     }
 
     private void GameWindow_KeyDown(object sender, KeyEventArgs e)
@@ -111,16 +152,16 @@ namespace jmprun
       //  Xview += 3;
       //}
 
-      Xview = player.Xpos;
+      Xview = player.Xpos - 8;
 
-      if (Obstecles[0].Xpos < Xview)
+      if (Obstecles[Obstecles.Count / 2 > 0 ? Obstecles.Count / 2 : 0].Xpos < Xview)
       {
-        if (Obstecles[0].Xpos + (this.Width / Globals.Scale) * 2 < Xview)
+        if (Obstecles[0].Xpos + (this.Width / Globals.Scale) < Xview)
         {
           Obstecles.RemoveAt(0);
         }
         Random rnd = new Random();
-        int x = Obstecles[Obstecles.Count - 1].Xpos + rnd.Next(1, 100);
+        int x = Obstecles[Obstecles.Count - 1].Xpos + Obstecles[Obstecles.Count - 1].Width + rnd.Next(0, 100 - Convert.ToInt32(Xview / this.Width) >= 5 ? 100 - Convert.ToInt32(Xview / this.Width) : 5);
         if (rnd.Next(0, 101) >= 50)
         {
           Obstecles.Add(new Rock(x));
