@@ -16,6 +16,7 @@ namespace jmprun
   {
     public playerFigure player;
     List<Obstecle> Obstecles;
+    List<medal> Medals;
     public double Xview = 2;
     public int CoinsTotal = 0;
     Image coin;
@@ -33,6 +34,7 @@ namespace jmprun
       this.Height = Globals.GameHeight * Globals.Scale + 70;
       this.BackColor = Color.DeepSkyBlue;
       Obstecles = new List<Obstecle>();
+      Medals = new List<medal>();
       player = new playerFigure(10);
       Obstecles.Add(new Tree(rnd.Next(20, 70)));
       for (int i = 0; i <= 3; i++)
@@ -48,8 +50,8 @@ namespace jmprun
         }
       }
       coin = Image.FromFile("../../../jmprun.SRC/coin.png");
-      
-      
+
+      Medals.Add(new medal(30));
 
     }
     public void DrawGamemap(PaintEventArgs e)
@@ -86,6 +88,12 @@ namespace jmprun
       }
       SolidBrush t = new SolidBrush(Color.Brown);
       SolidBrush r = new SolidBrush(Color.DarkSlateGray);
+
+      foreach(medal m in Medals)
+      {
+        e.Graphics.DrawImage(coin,(m.Xpos*Globals.Scale)-(Convert.ToInt32(Xview)*Globals.Scale),Globals.GameHeight * Globals.Scale - (m.Ypos*Globals.Scale) ,m.Width*Globals.Scale,m.Height*Globals.Scale);
+      }
+
       if (trees.Count > 0)
       {
         e.Graphics.FillRectangles(t, trees.ToArray());
@@ -103,9 +111,10 @@ namespace jmprun
       DrawGamemap(e);
       Font font = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Point);
       SolidBrush b = new SolidBrush(Color.Gold);
-      e.Graphics.DrawString(CoinsTotal + " x ", font, b, 10, 10);
+      e.Graphics.DrawImage(coin, 10, 10, 20, 20);
+      e.Graphics.DrawString(" x "+CoinsTotal, font, b, 30, 10);
       //e.Graphics.FillEllipse(b, 40, 10, 20, 20);
-      e.Graphics.DrawImage(coin, 40, 10, 20, 20);
+      
     }
 
     private void GameWindow_KeyDown(object sender, KeyEventArgs e)
@@ -146,11 +155,6 @@ namespace jmprun
     private void Timer(object sender, EventArgs e)
     {
       player.Update(Obstecles);
-      //Xview += 0.1;
-      //if (player.Xpos >= Xview + ((this.Width / Globals.Scale) * 0.75))
-      //{
-      //  Xview += 3;
-      //}
 
       Xview = player.Xpos - 8;
 
@@ -171,10 +175,26 @@ namespace jmprun
           Obstecles.Add(new Tree(x));
         }
       }
-
+      foreach(medal m in Medals)
+      {
+        if (m.crossedByPlayer(player.Xpos, player.Ypos, player.Width, player.Height))
+        {
+          CoinsTotal++;
+          Medals.Remove(m);
+          break;
+        }
+      }
+      if (Medals.Count < 1)
+      {
+        int x = Convert.ToInt32(Xview + (this.Width / Globals.Scale) * 2);
+        Medals.Add(new medal(x));
+      }
+      else if (Medals[0].Xpos < Xview - (this.Width / Globals.Scale))
+      {
+        Medals.RemoveAt(0);
+      }
+      
       this.Invalidate();
-      this.Update();
-      this.Refresh();
     }
   }
 }

@@ -12,5 +12,21 @@ namespace jmprun.Core.DL
     public int Ypos { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
+    public medal(int x)
+    {
+      Xpos = x;
+      Ypos = Globals.random.Next(2, 9);
+      Width = 2;
+      Height = 2;
+    }
+    public bool crossedByPlayer(int x,int y, int w, int h)
+    {
+      if(x+(w/Globals.Scale) >= Xpos-Width && x+(w / Globals.Scale) <= Xpos-Width)
+      {
+        return true;
+      }
+
+      return false;
+    }
   }
 }

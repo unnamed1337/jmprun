@@ -16,7 +16,7 @@ namespace jmprun.Core.DL
     public int Xmov { get; set; }
     public int Height { get; set; }
     public int Width { get; set; }
-    private bool canMoveDown { get; set; }
+    public bool canMoveDown { get; private set; }
     public Image img { get; set; }
     private bool img1 { get; set; }
 
