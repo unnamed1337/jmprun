@@ -23,7 +23,10 @@ namespace jmprun.Core.DL
     {
       if(x+(w/Globals.Scale) >= Xpos-Width && x+(w / Globals.Scale) <= Xpos-Width)
       {
-        return true;
+        if(y+(h/Globals.Scale) >= Ypos-Height && y<= Ypos-Height)
+        {
+          return true;
+        }
       }
 
       return false;
